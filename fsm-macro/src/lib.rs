@@ -81,13 +81,21 @@ pub fn fsm(input: TokenStream) -> TokenStream {
 
             quote! {
                 pub fn #event_ident(self) -> FSM<#to_ident> {
-                    FSM {
+                    let mut history = self.history;
+                    history.push(Transition{
+                        from: stringify!(#from_ident).to_string(),
+                        to: stringify!(#to_ident).to_string(),
+                        event: stringify!(#event_ident).to_string(),
+                    });
+
+                    return FSM {
                         _state: std::marker::PhantomData,
-                    }
+                        history,
+                    };
                 }
                 pub fn #event_fn(self, f: impl Fn(&str, &str, &str)) -> FSM<#to_ident> {
                     f(stringify!(#from_ident), stringify!(#to_ident), stringify!(#event_ident));
-                    self.#event_ident()
+                    return self.#event_ident();
                 }
             }
             }).collect();
@@ -113,14 +121,22 @@ pub fn fsm(input: TokenStream) -> TokenStream {
     let out = quote! {
         #(#states)*
 
+        #[derive(PartialEq, Debug)]
+        pub struct Transition {
+            pub from: String,
+            pub to: String,
+            pub event: String,
+        }
         pub struct FSM<T = #initial> {
             _state: std::marker::PhantomData<T>,
+            pub history: Vec<Transition>,
         }
 
         impl FSM {
             pub fn new() -> FSM<#initial> {
                 FSM {
                     _state: std::marker::PhantomData,
+                    history: vec![],
                 }
             }
         }

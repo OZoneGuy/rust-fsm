@@ -17,5 +17,9 @@ fn main() {
     let f = |from: &str, to: &str, ev: &str| {
         println!("{} -> {}: {}", from, to, ev);
     };
-    fsm.a_fn(f).a().a().b_fn(f).c().end();
+
+    let f_end = |to: &str| {
+        println!("ended at: {}", to);
+    };
+    fsm.a_fn(f).a().a().b_fn(f).c().end_fn(f_end);
 }

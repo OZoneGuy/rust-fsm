@@ -17,4 +17,5 @@ fn compiles() {
     let t = trybuild::TestCases::new();
     t.pass("tests/compile.rs");
     t.pass("tests/calling.rs");
+    t.pass("tests/history.rs");
 }
