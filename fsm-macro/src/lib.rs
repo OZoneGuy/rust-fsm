@@ -1,4 +1,4 @@
-mod types;
+mod data;
 
 use std::collections::HashMap;
 
@@ -6,7 +6,7 @@ use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::parse_macro_input;
 
-use crate::types::data::FSMMacroInput;
+use data::FSMMacroInput;
 
 #[proc_macro]
 pub fn fsm(input: TokenStream) -> TokenStream {
