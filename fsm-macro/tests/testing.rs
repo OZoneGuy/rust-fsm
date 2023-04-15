@@ -18,4 +18,5 @@ fn compiles() {
     t.pass("tests/compile.rs");
     t.pass("tests/calling.rs");
     t.pass("tests/history.rs");
+    t.pass("tests/order.rs");
 }

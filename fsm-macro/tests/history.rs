@@ -29,6 +29,5 @@ fn main() {
     );
     let fsm = fsm.c();
     debug_assert!(fsm.history.len() == 5);
-    dbg!(&fsm.history);
     fsm.end();
 }

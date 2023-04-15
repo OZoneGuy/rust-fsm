@@ -21,58 +21,91 @@ pub struct Transition {
 
 impl Parse for FSMMacroInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        let initial: String;
+        let mut initial: Option<String> = None;
         let mut final_: Vec<String> = Vec::new();
         let mut states: Vec<String> = Vec::new();
         let mut transitions: Vec<Transition> = Vec::new();
 
-        if input.peek(kw::initial) {
-            let _ = input.parse::<syn::Ident>()?;
-            let _ = input.parse::<syn::Token![=]>()?;
-            let ident = input.parse::<syn::Ident>()?;
-            initial = ident.to_string();
-        } else {
-            return Err(input.error("expected `initial = initial_state_name`"));
-        }
+        let mut init_span = None;
 
-        // parse states
-        while input.peek(syn::Ident) {
-            if input.peek(kw::end) {
-                break;
+        while !input.is_empty() {
+            // parse initial state
+            if input.peek(kw::initial) {
+                if initial.is_some() {
+                    return Err(input.error("initial state already defined"));
+                }
+                let kw = input.parse::<syn::Ident>()?;
+                let eq = input.parse::<syn::Token![=]>()?;
+                let ident = input.parse::<syn::Ident>()?;
+                init_span = kw.span().join(eq.span).unwrap().join(ident.span());
+                initial = Some(ident.to_string());
             }
-            let ident = input.parse::<syn::Ident>()?;
-            states.push(ident.to_string());
-        }
 
-        // parse final states
-        if input.peek(kw::end) {
-            let _ = input.parse::<syn::Ident>()?;
-            let _ = input.parse::<syn::Token![=]>()?;
-            let ident = input.parse::<syn::Ident>()?;
-            final_.push(ident.to_string());
-            while input.peek(syn::Token![,]) {
-                let _ = input.parse::<syn::Token![,]>()?;
+            // parse final states
+            if input.peek(kw::end) {
+                if final_.len() > 0 {
+                    return Err(input.error("final state already defined"));
+                }
+                let _ = input.parse::<syn::Ident>()?;
+                let _ = input.parse::<syn::Token![=]>()?;
                 let ident = input.parse::<syn::Ident>()?;
                 final_.push(ident.to_string());
+                while input.peek(syn::Token![,]) {
+                    let _ = input.parse::<syn::Token![,]>()?;
+                    let ident = input.parse::<syn::Ident>()?;
+                    final_.push(ident.to_string());
+                }
             }
+
+            // parse state or transition
+            if input.peek(syn::Ident) {
+                // parse the state name
+                let ident = input.parse::<syn::Ident>()?;
+
+                // parse transition
+                if input.peek(syn::Token![->]) {
+                    let _ = input.parse::<syn::Token![->]>()?;
+                    let to = input.parse::<syn::Ident>()?;
+                    let _ = input.parse::<syn::Token![:]>()?;
+                    let event = input.parse::<syn::Ident>()?;
+                    transitions.push(Transition {
+                        from: ident.to_string(),
+                        to: to.to_string(),
+                        event: event.to_string(),
+                    });
+                } else {
+                    // push state to list
+                    states.push(ident.to_string());
+                }
+            };
         }
 
-        // parse transitions
-        while input.peek(syn::Ident) {
-            let from = input.parse::<syn::Ident>()?;
-            let _ = input.parse::<syn::Token![->]>()?;
-            let to = input.parse::<syn::Ident>()?;
-            let _ = input.parse::<syn::Token![:]>()?;
-            let event = input.parse::<syn::Ident>()?;
-            transitions.push(Transition {
-                from: from.to_string(),
-                to: to.to_string(),
-                event: event.to_string(),
-            });
+        if initial.is_none() {
+            return Err(input.error("initial state not defined"));
+        }
+
+        if final_.len() == 0 {
+            return Err(input.error("final state not defined"));
+        }
+
+        if states.len() == 0 {
+            return Err(input.error("no states defined"));
+        }
+
+        if transitions.len() == 0 {
+            return Err(input.error("no transitions defined"));
+        }
+
+        let init_state = initial.clone().unwrap();
+        if !states.contains(&init_state) {
+            return Err(syn::Error::new(
+                init_span.unwrap(),
+                "initial state not defined",
+            ));
         }
 
         Ok(FSMMacroInput {
-            initial,
+            initial: initial.unwrap(),
             final_,
             states,
             transitions,
