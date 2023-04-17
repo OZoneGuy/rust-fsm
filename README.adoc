@@ -118,3 +118,13 @@ impl FSM<end_state> {
     * The generated code is placed in the same module as the macro call. It should ideally create a new module and place the new struct there.
  . Macros and LSP
     * Macros don't have the greatest lsp support. Doesn't always give intellisence and might not warn about bad code.
+
+== Features to add
+
+ * [X] Provide function to print to FSM to a graph format
+   * probably will stick to dot for now
+ * [ ] Check for unreachable states
+   * should give some sort of warning then...
+ * [ ] Allow for multiple transition labels on the same line
+   * something like: `A -> B: a,b,c,...`
+ *
