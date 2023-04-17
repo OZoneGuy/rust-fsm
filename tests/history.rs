@@ -13,7 +13,7 @@ fsm! {
 }
 
 fn main() {
-    let fsm = FSM::new();
+    let fsm = FSM::FSM::new();
     debug_assert!(fsm.history.is_empty());
     let fsm = fsm.a().a().a();
     debug_assert!(fsm.history.len() == 3);
@@ -21,7 +21,7 @@ fn main() {
     debug_assert!(fsm.history.len() == 4);
     debug_assert!(
         fsm.history.last()
-            == Some(&Transition {
+            == Some(&FSM::Transition {
                 from: "A".to_string(),
                 to: "B".to_string(),
                 event: "b".to_string(),

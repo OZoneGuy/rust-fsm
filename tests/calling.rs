@@ -13,7 +13,7 @@ fsm! {
 }
 
 fn main() {
-    let fsm = FSM::new();
+    let fsm = FSM::FSM::new();
     let f = |from: &str, to: &str, ev: &str| {
         println!("{} -> {}: {}", from, to, ev);
     };

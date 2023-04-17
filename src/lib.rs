@@ -76,30 +76,34 @@ pub fn fsm(input: TokenStream) -> TokenStream {
     });
 
     let initial = format_ident!("{}", input.initial);
+    // TODO: move all into a module
     let out = quote! {
-        #(#states)*
+        mod FSM {
+            #(#states)*
 
-        #[derive(PartialEq, Debug)]
-        pub struct Transition {
-            pub from: String,
-            pub to: String,
-            pub event: String,
-        }
-        pub struct FSM<T = #initial> {
-            _state: std::marker::PhantomData<T>,
-            pub history: Vec<Transition>,
-        }
+            // TODO: move out. Nothing changes here.
+            #[derive(PartialEq, Debug)]
+            pub struct Transition {
+                pub from: String,
+                pub to: String,
+                pub event: String,
+            }
+            pub struct FSM<T = #initial> {
+                _state: std::marker::PhantomData<T>,
+                pub history: Vec<Transition>,
+            }
 
-        impl FSM {
-            pub fn new() -> FSM<#initial> {
-                FSM {
-                    _state: std::marker::PhantomData,
-                    history: vec![],
+            impl FSM {
+                pub fn new() -> FSM<#initial> {
+                    FSM {
+                        _state: std::marker::PhantomData,
+                        history: vec![],
+                    }
                 }
             }
-        }
 
-        #(#transition_impls)*
+            #(#transition_impls)*
+        }
     };
 
     out.into()
