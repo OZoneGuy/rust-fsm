@@ -28,48 +28,6 @@ pub fn fsm(input: TokenStream) -> TokenStream {
             .push((event.clone(), to.clone()));
     });
 
-    // create FSM<T> impls for the different states
-    // each contain a function named after each event
-    // that transitions to the next state
-    // Each transition takes a callback function
-    // let transition_impls = transition_map.iter().map(|(from, transitions)| {
-    //     let from = format_ident!("{}", from);
-    //     let transitions = transitions.iter().map(|(event, to)| {
-    //         let event_ident = format_ident!("{}", event);
-    //         let to = format_ident!("{}", to);
-    //         let event_fn = format_ident!("{}_fn", event_ident);
-    //         let end_fn = if input.final_.contains(event) {
-    //             quote! {
-    //                 pub fn end(self) {}
-    //                 pub fn end_fn(self, f: impl Fn(&str, &str, &str)) {
-    //                     f(stringify!(#from), stringify!(#to), stringify!(#event_ident));
-    //                     self.end()
-    //                 }
-    //             }
-    //         } else {
-    //             quote! {}
-    //         };
-    //         quote! {
-    //             pub fn #event_ident(self) -> FSM<#to> {
-    //                 FSM {
-    //                     _state: std::marker::PhantomData,
-    //                 }
-    //             }
-    //             pub fn #event_fn(self, f: impl Fn(&str, &str, &str)) -> FSM<#to> {
-    //                 f(stringify!(#from), stringify!(#to), stringify!(#event_ident));
-    //                 self.#event_ident()
-    //             }
-    //             #end_fn
-    //         }
-    //     });
-
-    //     quote! {
-    //         impl FSM<#from> {
-    //             #(#transitions)*
-    //         }
-    //     }
-    // });
-
     let transition_impls = input.states.iter().map(|from_state| {
         let from_ident = format_ident!("{}", from_state);
         let mut funcs = vec![];
