@@ -44,10 +44,8 @@ fsm = fsm.end();
 // or pass a closure
 f_end = |state: %str| {
       println!("done!");
-      // maybe do something else as well..
-.
+      // maybe do something else as well...
 }
-
 ```
 
 ## How does it work
