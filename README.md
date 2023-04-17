@@ -39,13 +39,15 @@ let f = |from: &str, to: &str, event: &str| {
 fsm = fsm.transition_l_fn(f);
 
 // Call the end function. Confirm that the FSM reached a final state.
-fsm = fsm.end();
+fsm.end();
 
 // or pass a closure
 f_end = |state: %str| {
       println!("done!");
       // maybe do something else as well...
 }
+
+fsm.end_fn(f_end);
 ```
 
 ## How does it work
