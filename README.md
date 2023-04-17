@@ -1,17 +1,16 @@
-= Rust-FSM
+# Rust-FSM
 
 A statically checked finite state machine written in rust.
 
-== Motivation
+## Motivation
 
 Because I can. And I wanted to practice creating proc macros in rust. They can be fun...
 
-== Usage
+## Usage
 
 To create a state machine, use the `fsm` macro.
 
-[,rust]
-----
+```rust
 fsm!{
 
   initial = init_state
@@ -49,16 +48,15 @@ f_end = |state: %str| {
 .
 }
 
-----
+```
 
-== How does it work
+## How does it work
 
 The macro creates types for all the states and an FSM struct. The FSM struct is what the users should use. The state types allow it to define and restrict what transitions/functions can be called.
 
-=== Sample generated code
+### Sample generated code
 
-[,rust]
-----
+```rust
 type struct state_1;
 ...
 
@@ -109,22 +107,20 @@ impl FSM<end_state> {
     f("end_state");
   }
 }
-----
+```
 
-== Issues
+## Issues
 
- . Sanitization.
+1. Sanitization
+ * The generated code is placed in the same module as the macro call. It should ideally create a new module and place the new struct there.
+1. Macros and LSP
+ * Macros don't have the greatest lsp support. Doesn't always give intellisence and might not warn about bad code.
 
-    * The generated code is placed in the same module as the macro call. It should ideally create a new module and place the new struct there.
- . Macros and LSP
-    * Macros don't have the greatest lsp support. Doesn't always give intellisence and might not warn about bad code.
+## Features to add
 
-== Features to add
-
- * [X] Provide function to print to FSM to a graph format
+ * [x] Provide function to print to FSM to a graph format
    * probably will stick to dot for now
  * [ ] Check for unreachable states
    * should give some sort of warning then...
  * [ ] Allow for multiple transition labels on the same line
    * something like: `A -> B: a,b,c,...`
- *
