@@ -4,7 +4,7 @@ A statically checked finite state machine written in rust.
 
 == Motivation
 
-TODO
+Because I can. And I wanted to practice creating proc macros in rust. They can be fun...
 
 == Usage
 
@@ -112,3 +112,9 @@ impl FSM<end_state> {
 ----
 
 == Issues
+
+ . Sanitization.
+
+    * The generated code is placed in the same module as the macro call. It should ideally create a new module and place the new struct there.
+ . Macros and LSP
+    * Macros don't have the greatest lsp support. Doesn't always give intellisence and might not warn about bad code.
