@@ -37,7 +37,11 @@ impl Parse for FSMMacroInput {
                 let kw = input.parse::<syn::Ident>()?;
                 let eq = input.parse::<syn::Token![=]>()?;
                 let ident = input.parse::<syn::Ident>()?;
-                init_span = kw.span().join(eq.span).unwrap().join(ident.span());
+                if cfg!(feature = "nightly") {
+                    init_span = kw.span().join(eq.span).unwrap().join(ident.span());
+                } else {
+                    init_span = Some(kw.span());
+                }
                 initial = Some(ident.to_string());
             }
 
