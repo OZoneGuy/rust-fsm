@@ -2,6 +2,14 @@
 name = "fsm-macro"
 version = "0.1.0"
 edition = "2021"
+author = "OZoneGuy"
+description = "A statically checked finite state machine written in rust."
+
+keywords = ["fsm", "finite-state-machine"]
+license-file = "LICENSE"
+repository = "https://github.com/OZoneGuy/rust-fsm"
+readme = "README.md"
+
 autotests = false
 publish = true
 
